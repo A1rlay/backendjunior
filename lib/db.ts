@@ -10,4 +10,13 @@ db.exec(`
 	)
 `);
 
+db.exec(`
+	CREATE TABLE IF NOT EXISTS refresh_tokens(
+		token TEXT PRIMARY KEY,
+		user_id INTEGER NOT NULL,
+		expires_at TEXT NOT NULL,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	)
+`);
+
 export default db;

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "@/lib/db";
+import crypto from "crypto";
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
@@ -23,12 +24,23 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   };
-  const token = jwt.sign(
+
+  const accessToken = jwt.sign(
     { userId: user.id },
     process.env.JWT_SECRET!,
     { expiresIn: "15m" }
   );
 
-  return NextResponse.json({ token });
+  const refreshToken = crypto.randomBytes(32).toString("hex");
+
+  const expiresAt = new Date(
+    Date.now() + 7 * 24 * 60 * 60 * 1000
+  ).toISOString();
+
+  db.prepare(
+    "INSERT INTO refresh_tokens(token, user_id, expires_at) VALUES (?, ?, ?)"
+  ).run(refreshToken, user.id, expiresAt);
+
+  return NextResponse.json({ accessToken, refreshToken });
 };
 
