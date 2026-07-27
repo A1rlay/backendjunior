@@ -24,7 +24,7 @@ db.exec(`
 	CREATE TABLE IF NOT EXISTS transactions(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER NOT NULL,
-		amout INTEGER NOT NULL,
+		amount INTEGER NOT NULL,
 		type TEXT NOT NULL,
 		created_at TEXT NOT NULL DEFAULT (datetime('now')),
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
