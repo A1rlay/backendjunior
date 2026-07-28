@@ -34,7 +34,7 @@ export async function PUT(request: Request, { params }: Context) {
   const { id } = await params;
   const { amount, type } = await request.json();
 
-  if (!Number.isInteger(amount)) {
+  if (!Number.isInteger(amount) || amount <= 0) {
     return NextResponse.json(
       { error: "amount must be an integer number of cents" },
       { status: 400 }
