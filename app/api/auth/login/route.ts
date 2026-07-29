@@ -3,8 +3,17 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "@/lib/db";
 import crypto from "crypto";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
+  const key = request.headers.get("x-forwarded-for") ?? "unkown";
+  if (!rateLimit(key)) {
+    return NextResponse.json(
+      { error: "too many requests, slow down" },
+      { status: 429 }
+    );
+  }
+
   const { email, password } = await request.json();
 
   if (!email || !password) {
